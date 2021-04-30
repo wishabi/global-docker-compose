@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+
+# TODO:
+# - Test within another app by install as local gem
+# - Publish to artifactory
+# - Write example usage
+# - Some way to list available dependencies / validate when setting config?
+# - Test how this works with multiple applications trying to use the same deps at the same time?
+# - Test docker Kafka
+# - Add Kafka topic and schema UIs to docker
+# - Add Kafkateria to docker
+# - Add lenses to docker
+# - Docker-compose file: EXPOSE vs. PORT? Which is best here?
+
+require 'yaml'
+require 'thor'
+
+# ----- Helper Methods -----
+def run_command(cmd)
+	puts "-> #{cmd}"
+	output = `#{cmd}`
+	puts output
+end
+
+def run_interactive_command(cmd)
+	puts "-> #{cmd}"
+	system(cmd)
+end
+# --------------------------
+
+class CLI < Thor
+	@config_path = "#{Dir.pwd}/gdc_config.yml"
+	@dc_file = "#{__dir__}/../lib/docker-compose.yml"
+	@dc_apps = ""
+
+	class << self
+		attr_accessor :config_path
+		attr_accessor :dc_file
+		attr_accessor :dc_apps
+
+		def load_config
+			puts "Loading config file"
+			begin
+				self.dc_apps = YAML.load(File.read(self.config_path))
+			rescue Errno::ENOENT => e
+				puts "No app config found. Run the config command to specify dependencies"
+			end
+
+			return if self.dc_apps.nil?
+
+			puts "Using docker-compose file: #{self.dc_file}"
+			puts "Loaded config: #{self.dc_apps}"
+		end
+	end
+
+	# ---------- CLI command definitions start here ----------
+
+	desc 'config <list_of_dependencies>', 'Set the docker-compose dependencies for the current project'
+	def config(*args)
+		apps = args.join(' ')
+		puts "Writing apps config '#{apps}' to #{self.class.config_path}"
+		File.open(self.class.config_path, 'w+') { |f| f.write(YAML.dump(apps)) }
+	end
+
+	desc 'mysql', 'Starts a mysql console session'
+	def mysql
+		# TODO: is there a better way to find out which version is mysql is running?
+		run_interactive_command("docker-compose -f #{self.class.dc_file} exec mysql56 mysql -u root") ||
+			run_interactive_command("docker-compose -f #{self.class.dc_file} exec mysql57 mysql -u root")
+	end
+
+	desc 'redis', 'Starts a redis-cli session'
+	def redis_cli
+		run_interactive_command("docker-compose -f #{self.class.dc_file} exec redis redis-cli")
+	end
+
+	desc 'up', 'Runs docker-compose up with your specified dependencies'
+	def up
+		run_command('$(aws ecr get-login --no-include-email --region us-east-1)')
+		run_command("docker-compose -f #{self.class.dc_file} up -d #{self.class.dc_apps}")
+	end
+
+	desc 'down', 'Runs docker-compose down with your specified dependencies'
+	def down
+		run_command("docker-compose -f #{self.class.dc_file} down")
+	end
+
+	desc 'ps', 'Runs docker-compose ps'
+	def ps
+		run_command("docker-compose -f #{self.class.dc_file} ps")
+	end
+
+	desc 'logs', 'Runs docker-compose logs -f'
+	def logs
+		run_interactive_command("docker-compose -f #{self.class.dc_file} logs -f")
+	end
+end
+
+CLI.load_config
+CLI.start(ARGV)
