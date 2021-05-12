@@ -1,21 +1,19 @@
 PATH
   remote: .
   specs:
-    global_docker_compose (0.0.1)
+    gdc (0.0.1)
+      thor (>= 0.20)
 
 GEM
-  remote: https://rubygems.org/
+  remote: https://flipplib.jfrog.io/flipplib/api/gems/flipp-gems/
   specs:
-    rake (12.3.3)
     thor (1.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  global_docker_compose!
-  rake (~> 12.0)
-  thor (~> 1.1)
+  gdc!
 
 BUNDLED WITH
-   2.1.4
+   2.2.16
