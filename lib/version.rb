@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module GDC
+module GlobalDockerCompose
   VERSION = '0.0.1'
 end
