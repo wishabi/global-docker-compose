@@ -14,7 +14,7 @@ jobs:
       - checkout
       - run:
           name: Install aws cli
-          command: sudo apt-get install -y awscli
+          command: sudo apt update && sudo apt-get install -y awscli
       - run: aws s3 cp s3://flipp-platform-production/platform-param-decrypt/platform-param-decrypt_linux platform-param-decrypt_linux
       - run: chmod +x platform-param-decrypt_linux
       - run: mkdir vendor
