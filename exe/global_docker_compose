@@ -1,100 +1,143 @@
 #!/usr/bin/env ruby
 
 # TODO:
-# - Test within another app by install as local gem
 # - Publish to artifactory
 # - Write example usage
-# - Some way to list available dependencies / validate when setting config?
-# - Test how this works with multiple applications trying to use the same deps at the same time?
+# - Test how this works with multiple servicelications trying to use the same deps at the same time?
 # - Test docker Kafka
-# - Add Kafka topic and schema UIs to docker
-# - Add Kafkateria to docker
 # - Add lenses to docker
-# - Docker-compose file: EXPOSE vs. PORT? Which is best here?
+# - docker compose file: EXPOSE vs. PORT? Which is best here?
 
 require 'yaml'
 require 'thor'
+require 'thor/base'
 
-# ----- Helper Methods -----
+# @param cmd [String]
+# @return [Boolean]
 def run_command(cmd)
-	puts "-> #{cmd}"
-	output = `#{cmd}`
-	puts output
-end
-
-def run_interactive_command(cmd)
 	puts "-> #{cmd}"
 	system(cmd)
 end
-# --------------------------
+
+# @param cmd [String]
+# @return [String]
+def capture_command(cmd)
+	puts "-> #{cmd}"
+	`#{cmd}`
+end
 
 class CLI < Thor
-	@config_path = "#{Dir.pwd}/gdc_config.yml"
-	@dc_file = "#{__dir__}/../lib/docker-compose.yml"
-	@dc_apps = ""
 
-	class << self
-		attr_accessor :config_path
-		attr_accessor :dc_file
-		attr_accessor :dc_apps
+	# @return [Boolean]
+	def self.exit_on_failure?
+		true
+	end
 
-		def load_config
-			puts "Loading config file"
-			begin
-				self.dc_apps = YAML.load(File.read(self.config_path))
-			rescue Errno::ENOENT => e
-				puts "No app config found. Run the config command to specify dependencies"
+	no_commands do
+
+		# @return [String]
+		def dc_file
+			"#{__dir__}/../lib/docker-compose.yml"
+		end
+
+		# @return [Array<String>]
+		def configured_services
+			dc_config = YAML.load(File.read(self.dc_file))
+			dc_config['services'].keys
+		end
+
+		# @param command [String]
+		# @param service [String]
+		def validate_service(command, service)
+			service_not_found!(command, service) unless configured_services.include?(service)
+		end
+
+		# @param command [String]
+		# @param service [String]
+		def service_not_found!(command, service)
+			say "Cannot execute command #{command} - #{service} is not a known service!", :red
+			say "Known services: #{configured_services.join(' ')}"
+			exit(1)
+		end
+
+		# @param command [String]
+		# @return [String]
+		def service_string(command)
+			if options[:services].nil? || options[:services].empty?
+				say "No services provided for command #{command}!", :red
+				exit(1)
 			end
 
-			return if self.dc_apps.nil?
+			dc_services = configured_services
+			results = []
+			options[:services].each do |service|
+				if dc_services.include?(service)
+					results << service
+					if service == 'redis'
+						results << 'redisinsight'
+					end
+				else
+					service_not_found!(command, service)
+				end
+			end
+			results.join(' ')
+		end
 
-			puts "Using docker-compose file: #{self.dc_file}"
-			puts "Loaded config: #{self.dc_apps}"
+		# @param service [String]
+		# @param command [String]
+		def execute_docker_command(service, command)
+			run_command("docker compose -f #{dc_file} exec #{service} #{command}")
+		end
+
+	end
+
+	class_option(:services, type: :array)
+
+	desc 'up', 'Creates and starts services'
+	def up
+		str = service_string('up')
+		run_command('aws ecr get-login-password | docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com')
+		run_command("docker compose -f #{dc_file} up -d #{str}")
+	end
+
+	desc 'down', 'Stops and removes services, leaving volumes intact'
+	def down
+		if options[:services] && options[:services].any?
+			str = service_string('down')
+			run_command("docker compose -f #{dc_file} stop #{str}")
+			run_command("docker compose -f #{dc_file} rm -f #{str}")
+		else
+			run_command("docker compose -f #{dc_file} down")
 		end
 	end
 
-	# ---------- CLI command definitions start here ----------
-
-	desc 'config <list_of_dependencies>', 'Set the docker-compose dependencies for the current project'
-	def config(*args)
-		apps = args.join(' ')
-		puts "Writing apps config '#{apps}' to #{self.class.config_path}"
-		File.open(self.class.config_path, 'w+') { |f| f.write(YAML.dump(apps)) }
-	end
-
-	desc 'mysql', 'Starts a mysql console session'
-	def mysql
-		# TODO: is there a better way to find out which version is mysql is running?
-		run_interactive_command("docker-compose -f #{self.class.dc_file} exec mysql56 mysql -u root") ||
-			run_interactive_command("docker-compose -f #{self.class.dc_file} exec mysql57 mysql -u root")
-	end
-
-	desc 'redis', 'Starts a redis-cli session'
-	def redis_cli
-		run_interactive_command("docker-compose -f #{self.class.dc_file} exec redis redis-cli")
-	end
-
-	desc 'up', 'Runs docker-compose up with your specified dependencies'
-	def up
-		run_command('$(aws ecr get-login --no-include-email --region us-east-1)')
-		run_command("docker-compose -f #{self.class.dc_file} up -d #{self.class.dc_apps}")
-	end
-
-	desc 'down', 'Runs docker-compose down with your specified dependencies'
-	def down
-		run_command("docker-compose -f #{self.class.dc_file} down")
-	end
-
-	desc 'ps', 'Runs docker-compose ps'
-	def ps
-		run_command("docker-compose -f #{self.class.dc_file} ps")
-	end
-
-	desc 'logs', 'Runs docker-compose logs -f'
+	desc 'logs', 'Shows logs for your services'
 	def logs
-		run_interactive_command("docker-compose -f #{self.class.dc_file} logs -f")
+		str = service_string('logs')
+		run_command("docker compose -f #{dc_file} logs -f #{str}")
 	end
+
+	desc 'exec', 'Run a command on an existing container'
+	def exec(service, *command)
+		validate_service('exec', service)
+		execute_docker_command(service, command.join(' '))
+	end
+
+	desc 'mysql', 'Run the MySQL command line'
+	def mysql
+		# check which version is running
+		%w(mysql56 mysql57 mysql8).each do |version|
+			if options[:services].include?(version)
+				execute_docker_command(version, 'mysql')
+				return
+			end
+		end
+
+		# not found
+		say "mysql service not provided! Please use the --services option!", :red
+		exit(1)
+	end
+
 end
 
-CLI.load_config
 CLI.start(ARGV)

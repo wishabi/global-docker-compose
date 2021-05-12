@@ -1,7 +1,5 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-# Specify your gem's dependencies in global-docker-compose.gemspec
+source 'https://flipplib.jfrog.io/flipplib/api/gems/flipp-gems/'
+
 gemspec
-
-gem "rake", "~> 12.0"
-gem "thor", "~> 1.1"
