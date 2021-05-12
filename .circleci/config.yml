@@ -2,7 +2,7 @@ defaults: &defaults
     parallelism: 1
     working_directory: ~/workspace
     docker:
-      - image: 421990735784.dkr.ecr.us-east-1.amazonaws.com/ci-build-environment:ruby-2.6-stretch
+      - image: 421990735784.dkr.ecr.us-east-1.amazonaws.com/ci-build-environment:ruby-3.0-buster
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
