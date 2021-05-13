@@ -35,6 +35,11 @@ global_docker_compose "$@" --services=mysql57 redis kafka
 
 When you call e.g. `gdc up` it will automatically pass everything through to the `global_docker_compose` command which will correspond to `global_docker_compose up --services=mysql57 redis kafka`. All commands will understand this option and use it to tailor the subcommands to the project settings. 
 
+Note that it's recommended to have the current director in your PATH so you don't have to keep typing `./gdc`. In your `~/.bashrc` or `~/.zshrc` add:
+```bash
+EXPORT PATH=.:$PATH
+```
+
 ## Important Note
 
 All services are exposed with the host IP of `127.0.0.1`. If you use `localhost`, it may not work. Whenever accessing local services (e.g. in configuration for your app), you should always use the IP address, not `localhost`.
