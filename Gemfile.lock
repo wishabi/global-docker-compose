@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    global_docker_compose (0.0.1)
+    global_docker_compose (0.0.2)
       thor (>= 0.20)
 
 GEM

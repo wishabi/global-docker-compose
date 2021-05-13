@@ -1,30 +1,8 @@
 #!/usr/bin/env ruby
 
-# TODO:
-# - Publish to artifactory
-# - Write example usage
-# - Test how this works with multiple servicelications trying to use the same deps at the same time?
-# - Test docker Kafka
-# - Add lenses to docker
-# - docker compose file: EXPOSE vs. PORT? Which is best here?
-
 require 'yaml'
 require 'thor'
 require 'thor/base'
-
-# @param cmd [String]
-# @return [Boolean]
-def run_command(cmd)
-	puts "-> #{cmd}"
-	system(cmd)
-end
-
-# @param cmd [String]
-# @return [String]
-def capture_command(cmd)
-	puts "-> #{cmd}"
-	`#{cmd}`
-end
 
 class CLI < Thor
 
@@ -35,6 +13,13 @@ class CLI < Thor
 
 	no_commands do
 
+		# @param cmd [String]
+		# @return [Boolean, nil]
+		def run_command(cmd)
+			puts "-> #{cmd}"
+			system(cmd)
+		end
+
 		# @return [String]
 		def dc_file
 			"#{__dir__}/../lib/docker-compose.yml"
@@ -43,7 +28,12 @@ class CLI < Thor
 		# @return [Array<String>]
 		def configured_services
 			dc_config = YAML.load(File.read(self.dc_file))
-			dc_config['services'].keys
+			services = dc_config['services'].keys
+			if options[:compose_file]
+				dc_config = YAML.load(File.read(options[:compose_file]))
+				services += dc_config['services'].keys
+			end
+			services
 		end
 
 		# @param command [String]
@@ -64,7 +54,7 @@ class CLI < Thor
 		# @return [String]
 		def service_string(command)
 			if options[:services].nil? || options[:services].empty?
-				say "No services provided for command #{command}!", :red
+				say "No services provided for command #{command}! Use the --services option.", :red
 				exit(1)
 			end
 
@@ -83,38 +73,53 @@ class CLI < Thor
 			results.join(' ')
 		end
 
+		# @return [String]
+		def main_command
+			cmd = "docker compose -f #{dc_file}"
+			if options[:compose_file]
+				cmd << " -f #{options[:compose_file]}"
+			end
+			cmd
+		end
+
 		# @param service [String]
 		# @param command [String]
 		def execute_docker_command(service, command)
-			run_command("docker compose -f #{dc_file} exec #{service} #{command}")
+			run_command("#{main_command} exec #{service} #{command}")
 		end
 
 	end
 
 	class_option(:services, type: :array)
+	class_option(:compose_file, type: :string)
 
 	desc 'up', 'Creates and starts services'
 	def up
 		str = service_string('up')
 		run_command('aws ecr get-login-password | docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com')
-		run_command("docker compose -f #{dc_file} up -d #{str}")
+		run_command("#{main_command} up -d #{str}")
 	end
 
 	desc 'down', 'Stops and removes services, leaving volumes intact'
 	def down
 		if options[:services] && options[:services].any?
 			str = service_string('down')
-			run_command("docker compose -f #{dc_file} stop #{str}")
-			run_command("docker compose -f #{dc_file} rm -f #{str}")
+			run_command("#{main_command} stop #{str}")
+			run_command("#{main_command} rm -f #{str}")
 		else
-			run_command("docker compose -f #{dc_file} down")
+			run_command("#{main_command} down")
 		end
 	end
 
 	desc 'logs', 'Shows logs for your services'
 	def logs
 		str = service_string('logs')
-		run_command("docker compose -f #{dc_file} logs -f #{str}")
+		run_command("#{main_command} logs -f #{str}")
+	end
+
+	desc 'ps', 'Show currently running services'
+	def ps
+		run_command("#{main_command} ps")
 	end
 
 	desc 'exec', 'Run a command on an existing container'
@@ -136,6 +141,11 @@ class CLI < Thor
 		# not found
 		say "mysql service not provided! Please use the --services option!", :red
 		exit(1)
+	end
+
+	desc 'redis_cli', 'Run the Redis command line'
+	def redis_cli
+		execute_docker_command('redis', 'redis-cli')
 	end
 
 end
