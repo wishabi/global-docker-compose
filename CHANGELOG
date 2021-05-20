@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+# [0.0.3] - 2021-05-20
+- Added compatibility for Rails 3 (Thor < 0.2)
+- Added input file argument for `mysql` command
+
 ## [0.0.2] - 2021-05-13
 - Added the `ps` and `redis_cli` commands and the `compose_file` option.
 

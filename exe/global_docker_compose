@@ -11,6 +11,13 @@ class CLI < Thor
 		true
 	end
 
+	# For pre-0.18 compatibility
+	unless self.class.respond_to?(:no_commands)
+		def self.no_commands(&block)
+			self.no_tasks(&block)
+		end
+	end
+
 	no_commands do
 
 		# @param cmd [String]
@@ -84,8 +91,13 @@ class CLI < Thor
 
 		# @param service [String]
 		# @param command [String]
-		def execute_docker_command(service, command)
-			run_command("#{main_command} exec #{service} #{command}")
+		# @param input_file [String]
+		def execute_docker_command(service, command, input_file:nil)
+			cmd = "#{main_command} exec #{service} #{command}"
+			if input_file
+				cmd = "cat #{input_file} | #{main_command} exec -T #{service} #{command}"
+			end
+			run_command(cmd)
 		end
 
 	end
@@ -129,11 +141,11 @@ class CLI < Thor
 	end
 
 	desc 'mysql', 'Run the MySQL command line'
-	def mysql
+	def mysql(input=nil)
 		# check which version is running
 		%w(mysql56 mysql57 mysql8).each do |version|
 			if options[:services].include?(version)
-				execute_docker_command(version, 'mysql')
+				execute_docker_command(version, 'mysql', input_file: input)
 				return
 			end
 		end

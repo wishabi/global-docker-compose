@@ -24,7 +24,7 @@ You now should be able to access the `global_docker_compose` command line from a
 * `global_docker_compose ps`: Show all running services that were configured using the tool.
 * `global_docker_compose logs`: Print out logs.
 * `global_docker_compose exec <service> <command>` Execute a command on an existing service.
-* `global_docker_compose mysql --service=<service>` Start a MySQL client against whatever MySQL service is provided (e.g. `mysql56`).
+* `global_docker_compose mysql --service=<service> {input_file}` Start a MySQL client against whatever MySQL service is provided (e.g. `mysql56`). If an input file is provided, execute the statements in the input file.
 * `global_docker_compose redis_cli` Start the Redis CLI (assuming `redis` is running)
 
 The recommended usage of this command is via a shell script that lives in your project which automatically passes through the services that the app cares about. For example, in an executable file called `gdc`:
