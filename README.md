@@ -115,6 +115,10 @@ That's it! You can access your local Lenses at [http://localhost:3030](http://lo
 
 Redis comes with a built-in `redisinsight` task which can show you the contents of your Redis installation. You can access Insights at [http://localhost:8001](http://localhost:8001).
 
+## Releasing
+
+Releases are done via [GoReleaser](https://goreleaser.com/intro/) which is run on CircleCI whenever a new tag is pushed. See the file `.goreleaser.yml` for more information.
+
 ## Contributing
 
 Feel free to fork and add pull requests - we can add more services as necessary or tweak the ones we have.
