@@ -13,7 +13,7 @@ If you're running MacOS, you can install `global_docker_compose` via `homebrew`:
 `brew install wishabi/flipp/global_docker_compose`
 
 You will need a [personal access token](https://github.com/settings/tokens) and set it to the `HOMEBREW_GITHUB_API_TOKEN` environment
-variable to install it this way. Alternatively, you can download executables from the [Releases page](https://github.com/wishabi/global_docker_compose/releases).
+variable to install it this way. Alternatively, you can download executables from the [Releases page](https://github.com/wishabi/global_docker_compose/releases), unzip it and put it somewhere in your `PATH` variable.
 
 Or you can build it from source by running the following from the root directory of this repo:
 
@@ -23,22 +23,22 @@ You now should be able to access the `global_docker_compose` command line from a
 
 `global_docker_compose` has multiple sub-commands, most of which should be familiar:
 
-* `global_docker_compose up --service=<service1> <service2>`: Bring up a list of services as defined by the table below.
-* `global_docker_compose down --service=<service1> <service2>`: Bring down the specificed services.
+* `global_docker_compose up --service=<service1>,<service2>`: Bring up a list of services as defined by the table below.
+* `global_docker_compose down --service=<service1>,<service2>`: Bring down the specificed services.
 * `global_docker_compose down`: Bring down all services.
 * `global_docker_compose ps`: Show all running services that were configured using the tool.
 * `global_docker_compose logs`: Print out logs.
 * `global_docker_compose exec <service> <command>` Execute a command on an existing service.
-* `global_docker_compose mysql --service=<service> {input_file}` Start a MySQL client against whatever MySQL service is provided (e.g. `mysql56`). If an input file is provided, execute the statements in the input file.
+* `global_docker_compose mysql --service=<service> {input_file}` Start a MySQL client against whatever MySQL service is provided (e.g. `mysql56`). If an input file is provided, execute the statements in the input file. Additional services can be specified in the `<service>` parameter; they will be ignored.
 * `global_docker_compose redis_cli` Start the Redis CLI (assuming `redis` is running)
 
 The recommended usage of this command is via a shell script that lives in your project which automatically passes through the services that the app cares about. For example, in an executable file called `gdc`:
 
 ```shell
-global_docker_compose "$@" --services=mysql57 redis kafka
+global_docker_compose "$@" --services=mysql57,redis,kafka
 ```
 
-When you call e.g. `gdc up` it will automatically pass everything through to the `global_docker_compose` command which will correspond to `global_docker_compose up --services=mysql57 redis kafka`. All commands will understand this option and use it to tailor the subcommands to the project settings. This allows your dev setup to be both simple and consistent: in all projects you use the same commands, `gdc up`, `gdc down`, `gdc mysql` etc. without having to worry about which versions or dependencies are installed.
+When you call e.g. `gdc up` it will automatically pass everything through to the `global_docker_compose` command which will correspond to `global_docker_compose up --services=mysql57,redis,kafka`. All commands will understand this option and use it to tailor the subcommands to the project settings. This allows your dev setup to be both simple and consistent: in all projects you use the same commands, `gdc up`, `gdc down`, `gdc mysql` etc. without having to worry about which versions or dependencies are installed.
 
 Note that it's recommended to have the current directory in your PATH so you don't have to keep typing `./gdc`. In your `~/.bashrc` or `~/.zshrc` add:
 ```bash
@@ -71,7 +71,7 @@ services:
 ...you can start up Redis and Postgres with the following command:
 
 ```bash
-global_docker_compose up --services=redis postgres --compose_file=./docker-compose.yml
+global_docker_compose up --services=redis,postgres --compose_file=./docker-compose.yml
 ```
 
 ## Supported Services

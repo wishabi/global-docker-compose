@@ -16,7 +16,7 @@ var outputFile = "/tmp/docker-compose-out.yml"
 func NewComposeInfo(additionalFile string, requestedServices string) ComposeInfo {
 	serviceArray := []string{}
 	if len(requestedServices) > 0 {
-		serviceArray = strings.Split(requestedServices, " ")
+		serviceArray = strings.Split(requestedServices, ",")
 	}
 	return ComposeInfo{
 		MainFile: dcFile,
