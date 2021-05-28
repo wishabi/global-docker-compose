@@ -8,13 +8,18 @@ This tool is specifically to be used for *local development*, not for integratio
 
 ## Usage
 
-You must have Ruby and Docker installed to use this tool.
+If you're running MacOS, you can install `global_docker_compose` via `homebrew`:
 
-First install it as a Ruby gem:
+`brew install wishabi/flipp/global_docker_compose`
 
-`gem install global_docker_compose`
+You will need a [personal access token](https://github.com/settings/tokens) and set it to the `HOMEBREW_GITHUB_API_TOKEN` environment
+variable to install it this way. Alternatively, you can download executables from the [Releases page](https://github.com/wishabi/global_docker_compose/releases).
 
-You now should be able to access the `global_docker_compose` command line from anywhere on your computer that has access to the same gemset. If you are using RVM, you will need to do this for each installed Ruby version, or simply add this to your Gemfile.
+Or you can build it from source by running the following from the root directory of this repo:
+
+`go build -o global_docker_compose cmd/gdc/main.go`
+
+You now should be able to access the `global_docker_compose` command line from anywhere on your computer.
 
 `global_docker_compose` has multiple sub-commands, most of which should be familiar:
 
@@ -33,9 +38,9 @@ The recommended usage of this command is via a shell script that lives in your p
 global_docker_compose "$@" --services=mysql57 redis kafka
 ```
 
-When you call e.g. `gdc up` it will automatically pass everything through to the `global_docker_compose` command which will correspond to `global_docker_compose up --services=mysql57 redis kafka`. All commands will understand this option and use it to tailor the subcommands to the project settings. 
+When you call e.g. `gdc up` it will automatically pass everything through to the `global_docker_compose` command which will correspond to `global_docker_compose up --services=mysql57 redis kafka`. All commands will understand this option and use it to tailor the subcommands to the project settings. This allows your dev setup to be both simple and consistent: in all projects you use the same commands, `gdc up`, `gdc down`, `gdc mysql` etc. without having to worry about which versions or dependencies are installed.
 
-Note that it's recommended to have the current director in your PATH so you don't have to keep typing `./gdc`. In your `~/.bashrc` or `~/.zshrc` add:
+Note that it's recommended to have the current directory in your PATH so you don't have to keep typing `./gdc`. In your `~/.bashrc` or `~/.zshrc` add:
 ```bash
 EXPORT PATH=.:$PATH
 ```
@@ -113,3 +118,12 @@ Redis comes with a built-in `redisinsight` task which can show you the contents 
 ## Contributing
 
 Feel free to fork and add pull requests - we can add more services as necessary or tweak the ones we have.
+
+### Adding a new service
+
+The steps to add a new service are:
+
+1. Add the service to `gdc/docker-compose.yml`.
+2. Add the functionality for your command in `gdc/docker.go`.
+3. Add a new command under `cmd/gdc/commands`. You can copy and paste an existing one or make changes. `global_docker_compose` uses [Cobra](https://github.com/spf13/cobra) for command-line flags, validations, help text and arguments, so please read that documentation for more info.
+4. Put up your PR!

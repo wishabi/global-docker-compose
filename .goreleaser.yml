@@ -1,0 +1,28 @@
+project_name: global_docker_compose
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - env:
+      - CGO_ENABLED=0
+    dir: cmd/gdc
+    goos:
+      - linux
+      - darwin
+    binary: global_docker_compose
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+brews:
+  - 
+    name: global_docker_compose
+    folder: Formula
+    tap:
+      owner: wishabi
+      name: homebrew-flipp
+    download_strategy: :github_private_release
+    custom_require: "../lib/private"
+    description: Standardized and centralized Docker compose command

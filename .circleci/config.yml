@@ -2,7 +2,7 @@ defaults: &defaults
     parallelism: 1
     working_directory: ~/workspace
     docker:
-      - image: 421990735784.dkr.ecr.us-east-1.amazonaws.com/ci-build-environment:ruby-3.0-buster
+      - image: 421990735784.dkr.ecr.us-east-1.amazonaws.com/ci-build-environment:golang-1.16
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
@@ -14,29 +14,9 @@ jobs:
       - checkout
       - run:
           name: Install aws cli
-          command: sudo apt update && sudo apt-get install -y awscli
-      - run: aws s3 cp s3://flipp-platform-production/platform-param-decrypt/platform-param-decrypt_linux platform-param-decrypt_linux
-      - run: chmod +x platform-param-decrypt_linux
-      - run: mkdir vendor
-      - run: sudo chmod 1777 -R /home/circleci/.bundle /tmp
-      - run: ./platform-param-decrypt_linux -bundleConfig > ~/.bundle/config
-
-      # Restore bundle cache & npm cache
-      - restore_cache:
-          key: 'rails-{{ checksum "Gemfile.lock" }}'
-
-      # Bundle install dependencies in /tmp/
-      # so Dockerfile does not copy them since
-      # its base image is different than CircleCI
-      - run:
-          name: Bundle install
-          command: bundle install --path vendor/bundle --jobs=4 --retry=3
-
-      # Store bundle cache
-      - save_cache:
-          key: 'rails-{{ checksum "Gemfile.lock" }}'
-          paths:
-            - ~/workspace/vendor/bundle
+          command: sudo apt-get install -y awscli
+      - run: export VERSION=$(git describe --always --long --dirty)
+      - run: GOOS=linux GOARCH=amd64 go build -o global_docker_compose -v -ldflags="-X main.version=${VERSION}" cmd/gdc/main.go
 
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
@@ -44,20 +24,40 @@ jobs:
           # Must be relative path from root
           paths:
             - .
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - run: export PATH="$PATH:/go/bin"
+      - run: go get -u golang.org/x/lint/golint
+      - run: golint -set_exit_status $(go list ./... | grep -v /vendor/)
 
   deploy-to-prod:
     <<: *defaults
-    working_directory: ~/workspace
-
     steps:
-      - checkout
-      - run: chmod +x ./deploy/artifactory.sh && ./deploy/artifactory.sh
+      - attach_workspace:
+          at: ~/workspace
+      - run: curl -sL https://git.io/goreleaser | bash    
 
 workflows:
   version: 2
-  build-and-deploy:
+  build-test-and-deploy:
     jobs:
       - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
+      - deploy-to-prod:
+          requires:
+            - test
+            - lint
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
       - deploy-to-prod:
            requires:
              - build
