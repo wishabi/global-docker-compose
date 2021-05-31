@@ -39,6 +39,7 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - run: git reset --hard
+      - run: git clean -f -d
       - run: curl -sL https://git.io/goreleaser | bash    
 
 workflows:
