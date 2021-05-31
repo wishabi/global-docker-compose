@@ -18,8 +18,6 @@ Or you can build it from source by running the following from the root directory
 
 `go build -o global_docker_compose cmd/gdc/main.go`
 
-You now should be able to access the `global_docker_compose` command line from anywhere on your computer.
-
 `global_docker_compose` has multiple sub-commands, most of which should be familiar:
 
 * `global_docker_compose up --service=<service1>,<service2>`: Bring up a list of services as defined by the table below.
