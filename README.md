@@ -1,6 +1,6 @@
 # global_docker_compose
 
-`global_docker_compose` is a centralized way to manage your external dependencies across multiple projects. You start up your Docker services once, and all relevant ports are exposed so that you can use them in your apps. You don't need special `docker-compose.yml` files in each app, nor do you have multiple versions of MySQL or Kafka running around.
+`global_docker_compose` is a centralized way to manage your external dependencies across multiple projects. You start up your Docker services once, and all relevant ports are exposed so that you can use them in your apps. You don't need special `docker-compose.yml` files in each app, nor do you have multiple versions of MySQL or Kafka running around. 
 
 The idea behind `global_docker_compose` is to have everything *but* your app running in a Docker container. `global_docker_compose` is the central place to manage making those containers "good", including volumes, correct port exposure, hostnames, etc.
 
