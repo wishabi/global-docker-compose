@@ -12,8 +12,7 @@ If you're running MacOS, you can install `global_docker_compose` via `homebrew`:
 
 `brew install wishabi/flipp/global_docker_compose`
 
-You will need a [personal access token](https://github.com/settings/tokens) and set it to the `HOMEBREW_GITHUB_API_TOKEN` environment
-variable to install it this way. Alternatively, you can download executables from the [Releases page](https://github.com/wishabi/global_docker_compose/releases), unzip it and put it somewhere in your `PATH` variable.
+Alternatively, you can download executables from the [Releases page](https://github.com/wishabi/global_docker_compose/releases), unzip it and put it somewhere in your `PATH` variable.
 
 Or you can build it from source by running the following from the root directory of this repo:
 
