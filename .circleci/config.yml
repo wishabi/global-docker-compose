@@ -48,12 +48,8 @@ workflows:
       - lint:
           requires:
             - build
-      - test:
-          requires:
-            - build
       - deploy-to-prod:
           requires:
-            - test
             - lint
           filters:
             tags:
