@@ -10,8 +10,10 @@ services:
         - "3307:3306"
     volumes:
         - mysql56-data:/var/lib/mysql
+        - /tmp:/tmp
     environment:
         MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    command: --secure-file-priv=''
 
   mysql57:
     hostname: db
