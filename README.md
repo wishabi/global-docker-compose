@@ -112,6 +112,22 @@ That's it! You can access your local Lenses at [http://localhost:3030](http://lo
 
 Redis comes with a built-in `redisinsight` task which can show you the contents of your Redis installation. You can access Insights at [http://localhost:8001](http://localhost:8001).
 
+To allow it to access your local Redis, you *can't* use `127.0.0.1`. Instead [you need to use your host IP address](https://collabnix.com/running-redisinsight-using-docker-compose/) - use `ifconfig en0` to find it:
+
+<pre>
+➜  ~/RubymineProjects/cp-legacy git:(main) ✗ ifconfig en0
+en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	options=400<CHANNEL_IO>
+	ether 14:7d:da:49:ca:df 
+	inet6 fe80::10f0:fee7:2a6f:be0e%en0 prefixlen 64 secured scopeid 0xa 
+	inet <b>192.168.1.9</b> netmask 0xffffff00 broadcast 192.168.1.255
+	nd6 options=201<PERFORMNUD,DAD>
+	media: autoselect
+	status: active
+</pre>
+
+In this case you'd enter `192.168.1.9` as your hostname in Redis Insight.
+
 ## Releasing
 
 Releases are done via [GoReleaser](https://goreleaser.com/intro/) which is run on CircleCI whenever a new tag is pushed. See the file `.goreleaser.yml` for more information.
