@@ -6,7 +6,7 @@ The idea behind `global_docker_compose` is to have everything *but* your app run
 
 This tool is specifically to be used for *local development*, not for integration testing on CI or production.
 
-## Usage
+## Installing
 
 If you're running MacOS, you can install `global_docker_compose` via `homebrew`:
 
@@ -17,6 +17,8 @@ Alternatively, you can download executables from the [Releases page](https://git
 Or you can build it from source by running the following from the root directory of this repo:
 
 `go build -o global_docker_compose cmd/gdc/main.go`
+
+## Usage
 
 `global_docker_compose` has multiple sub-commands, most of which should be familiar:
 
