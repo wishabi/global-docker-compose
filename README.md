@@ -82,6 +82,7 @@ Key|Service|Ports
 `mysql8`|MySQL 8.0|3308
 `redis`|Redis|<ul><li>6379</li><li>8001 (Insights)</li></ul>
 `kafka`|Kafka with Lenses Box|<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>3030 (Lenses)</li></ul>
+`mailcatcher`Mailcatcher|<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
 
 ### MySQL
 
@@ -130,9 +131,23 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 
 In this case you'd enter `192.168.1.9` as your hostname in Redis Insight.
 
+### Mailcatcher
+
+[Mailcatcher](https://mailcatcher.me/) is a local SMTP server you can use to send and view e-mails. Set up your mail sending code to talk
+to port 1025 and you can view the mail that got sent on port 1080.
+
+On Rails, this would look like:
+
+```ruby
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = { address: '127.0.0.1', port: 1025 }
+```
+
 ## Releasing
 
 Releases are done via [GoReleaser](https://goreleaser.com/intro/) which is run on CircleCI whenever a new tag is pushed. See the file `.goreleaser.yml` for more information.
+
+To bump a new version, add a Git tag and also update the version reported in `cmd/gdc/commands/root.go`.
 
 ## Contributing
 

@@ -72,6 +72,12 @@ services:
       - "3030:3030"
       - "9991:9991"
 
+  mailcatcher:
+    image: yappabe/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"   
+
 volumes:
   mysql56-data:
   mysql57-data:
