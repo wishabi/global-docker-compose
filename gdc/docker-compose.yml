@@ -25,6 +25,7 @@ services:
         - mysql57-data:/var/lib/mysql
     environment:
         MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    command: --secure-file-priv=''
 
   mysql8:
     hostname: db

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+[0.4] - 2021-06-21
+- Added secure-file-priv option for MySQL 5.7.
+
 [0.3] - 2021-06-10
 - Added mailcatcher service.
 
