@@ -119,7 +119,6 @@ mysqldump --single-transaction -h 127.0.0.1 -P 3306 --databases fadmin_developme
 rm ./dump.sql
 ```
 
-
 ### Kafka with Lenses
 
 The recommended way to have your app talk to Kafka is to use Lenses Box, which is denoted by the `kafka` service. This includes the Kafka brokers, Zookeeper, schema registry, and Kafka Connect.
