@@ -94,6 +94,32 @@ global_docker_compose supports MySQL 5.6, 5.7 and 5.8. To avoid port conflicts, 
 
 The reason 5.7 was given the "default" of 3306 is that it is currently the most common / default version to use.
 
+#### Exporting and Importing databases to GDC
+To get a dump ready from your local databases to GDC, you must:
+
+1. First set up permissions on your users for localhost by going into your local mysql server as the root user `mysql -u root`
+```sql
+-- Grant these perms for all users
+> GRANT SHOW VIEW, SELECT, LOCK TABLES ON *.* TO ''@'localhost';
+-- Or just grant them for a specific user (like fadmin)
+> GRANT SHOW VIEW, SELECT, LOCK TABLES ON *.* TO 'fadmin'@'localhost';
+```
+2. Then actually dump the databases or selected databases with the `--databases` option
+```sh
+mysqldump --single-transaction -h 127.0.0.1 -P 3306 --all-databases --no-tablespaces > ./dump.sql
+# In a space-separated list, list it after `--databases` flag, e,g. fadmin dbs
+mysqldump --single-transaction -h 127.0.0.1 -P 3306 --databases fadmin_development fadmin_test --no-tablespaces > ./dump.sql
+```
+3. Now import the dump through gdc. If you app is already on gdc, the `mysql` command will default to the version of MySQL that it currently uses. Otherwise, you can speficy the selected databases in Step 2. and MySQL version using `global_docker_compose mysql --service=<service> <dump_file>`
+```sh
+./gdc mysql ./dump.sql
+```
+4. Rinse and repeat! Don't forget to remove the dump-file to reduce clutter on your local machine.
+```
+rm ./dump.sql
+```
+
+
 ### Kafka with Lenses
 
 The recommended way to have your app talk to Kafka is to use Lenses Box, which is denoted by the `kafka` service. This includes the Kafka brokers, Zookeeper, schema registry, and Kafka Connect.
