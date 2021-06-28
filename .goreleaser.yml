@@ -23,6 +23,4 @@ brews:
     tap:
       owner: wishabi
       name: homebrew-flipp
-    download_strategy: :github_private_release
-    custom_require: "../lib/private"
     description: Standardized and centralized Docker compose command
