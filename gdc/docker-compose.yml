@@ -62,8 +62,9 @@ services:
 
   kafka:
     image: lensesio/box
+    hostname: ${ADV_HOST:-}
     environment:
-      ADV_HOST: 127.0.0.1
+      ADV_HOST: ${ADV_HOST:-127.0.0.1}
       EULA: ${LENSES_KEY}
       DISABLE_JMX: 1
       ELASTICSEARCH_PORT: 0
@@ -78,7 +79,7 @@ services:
     image: yappabe/mailcatcher
     ports:
       - "1080:1080"
-      - "1025:1025"   
+      - "1025:1025"
 
 volumes:
   mysql56-data:
