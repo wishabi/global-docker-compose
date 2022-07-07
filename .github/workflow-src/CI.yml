@@ -1,0 +1,38 @@
+_variables_:
+  PROD_BRANCH: main
+
+on:
+  pull_request:
+  push:
+    branches:
+    - __PROD_BRANCH__
+  workflow_dispatch:
+
+env:
+  BUNDLE_PATH: vendor/bundle
+
+_defaults_:
+  _container_:
+    image: ghcr.io/wishabi/ci-build-environment:golang-1.16
+    credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
+jobs:
+  lint:
+    container: _container_
+    steps:
+      - run: export PATH="$PATH:/go/bin"
+      - run: go get -u golang.org/x/lint/golint
+      - run: golint -set_exit_status $(go list ./... | grep -v /vendor/)
+
+  build_and_deploy:
+    container: _container_
+    needs: [lint]
+    steps:
+      - name: Install aws cli
+        run: sudo apt-get install -y awscli
+      - run: git reset --hard
+      - run: git clean -f -d
+      - run: curl -sL https://git.io/goreleaser | bash    
+

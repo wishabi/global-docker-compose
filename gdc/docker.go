@@ -10,7 +10,7 @@ import (
 
 //go:embed docker-compose.yml
 var dcFile []byte
-var outputFile = "/tmp/docker-compose-out.yml"
+var outputFile = "./docker-compose-out.yml"
 
 //NewComposeInfo with the given additional file and requested services
 func NewComposeInfo(additionalFile string, requestedServices string) ComposeInfo {
@@ -116,21 +116,31 @@ func Up(compose ComposeInfo) {
 }
 
 //Down bring down the Docker containers
-func Down(compose ComposeInfo) {
+func Down(compose ComposeInfo, service string) {
 	if (len(compose.RequestedServices) > 0) {
 		fmt.Printf("Requsted services ,%v", compose.RequestedServices[0])
-		str := serviceString(compose, "down")
-		RunCommand("%s stop %s", mainCommand(compose), str)
-		RunCommand("%s rm -f %s", mainCommand(compose), str)
+		var command string;
+		if service != "" {
+			command = fmt.Sprintf("down %s", service)
+		} else {
+			command = serviceString(compose, "down")
+		}
+		RunCommand("%s stop %s", mainCommand(compose), command)
+		RunCommand("%s rm -f %s", mainCommand(compose), command)
 	} else {
 		RunCommand("%s down", mainCommand(compose))
 	}
 }
 
 //Logs show the logs for the selected containers
-func Logs(compose ComposeInfo) {
-  str := serviceString(compose, "logs")
-	RunCommand("%s logs -f %s", mainCommand(compose), str)
+func Logs(compose ComposeInfo, service string) {
+	var command string;
+	if service != "" {
+		command = fmt.Sprintf("logs %s", service)
+	} else {
+		command = serviceString(compose, "logs")
+	}
+	RunCommand("%s logs -f %s", mainCommand(compose), command)
 }
 
 //Ps show the currently running containers
@@ -163,5 +173,10 @@ func Mysql(compose ComposeInfo, input string) {
 //RedisCLI starts up the Redis command line
 func RedisCLI(compose ComposeInfo) {
 	executeDockerCommand(compose, "redis", "redis-cli", "")
+}
+
+//Config print docker compose config 
+func Config(compose ComposeInfo) {
+	RunCommand("%s config", mainCommand(compose))
 }
 

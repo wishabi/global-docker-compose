@@ -23,10 +23,11 @@ Or you can build it from source by running the following from the root directory
 `global_docker_compose` has multiple sub-commands, most of which should be familiar:
 
 * `global_docker_compose up --service=<service1>,<service2>`: Bring up a list of services as defined by the table below.
-* `global_docker_compose down --service=<service1>,<service2>`: Bring down the specificed services.
+* `global_docker_compose down {service}`: Bring down the specificed service, or all services if not provided.
 * `global_docker_compose down`: Bring down all services.
 * `global_docker_compose ps`: Show all running services that were configured using the tool.
-* `global_docker_compose logs`: Print out logs.
+* `global_docker_compose config`: Print out the docker compose config file being used.
+* `global_docker_compose logs {service}`: Print out logs for the specified service, or all services if not provided.
 * `global_docker_compose exec <service> <command>` Execute a command on an existing service.
 * `global_docker_compose mysql --service=<service> {input_file}` Start a MySQL client against whatever MySQL service is provided (e.g. `mysql56`). If an input file is provided, execute the statements in the input file. Additional services can be specified in the `<service>` parameter; they will be ignored.
 * `global_docker_compose redis_cli` Start the Redis CLI (assuming `redis` is running)
@@ -170,7 +171,7 @@ On Rails, this would look like:
 
 ## Releasing
 
-Releases are done via [GoReleaser](https://goreleaser.com/intro/) which is run on CircleCI whenever a new tag is pushed. See the file `.goreleaser.yml` for more information.
+Releases are done via [GoReleaser](https://goreleaser.com/intro/) which is run on GitHub Actions whenever a new tag is pushed. See the file `.goreleaser.yml` for more information.
 
 To bump a new version, add a Git tag and also update the version reported in `cmd/gdc/commands/root.go`.
 
@@ -178,6 +179,9 @@ To bump a new version, add a Git tag and also update the version reported in `cm
 
 Feel free to fork and add pull requests - we can add more services as necessary or tweak the ones we have.
 
+You can build the executable locally by running:
+
+    go build -o global_docker_compose cmd/gdc/main.go
 ### Adding a new service
 
 The steps to add a new service are:

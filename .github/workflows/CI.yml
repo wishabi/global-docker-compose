@@ -1,0 +1,83 @@
+######## GENERATED FROM ./github/workflow-src/CI.yml
+######## USING gha_config https://github.com/wishabi/gha-config
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+env:
+  SLACK_CHANNEL:
+  HOME: /home/circleci
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  DEPLOYMENT_TYPE: ${{ secrets.DEPLOYMENT_TYPE }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  ECS_CLUSTER_PROD: ${{ secrets.ECS_CLUSTER_PROD }}
+  ECS_CLUSTER_STG: ${{ secrets.ECS_CLUSTER_STG }}
+  ECS_SERVICE_PROD: ${{ secrets.ECS_SERVICE_PROD }}
+  ECS_SERVICE_STG: ${{ secrets.ECS_SERVICE_STG }}
+  SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+  SERVICE_PROFILE: ${{ secrets.SERVICE_PROFILE }}
+  SERVICE_TOKEN: ${{ secrets.SERVICE_TOKEN }}
+  WISHABI_ENVIRONMENT: ${{ secrets.WISHABI_ENVIRONMENT }}
+  ARTIFACTORY_HOST: ${{ secrets.ARTIFACTORY_HOST }}
+  ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+  ARTIFACTORY_REALM: ${{ secrets.ARTIFACTORY_REALM }}
+  ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
+  BUNDLE_PATH: vendor/bundle
+
+jobs:
+
+  lint:
+    runs-on: [ubuntu, runner-fleet]
+    container:
+      image: ghcr.io/wishabi/ci-build-environment:golang-1.16
+      credentials:
+        username: "${{ github.repository_owner }}"
+        password: "${{ secrets.GHCR_TOKEN }}"
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Flipp global
+      uses: wishabi/github-actions@v0.4
+      env:
+        SLACK_BOT_TOKEN: "${{ secrets.SLACK_BOT_TOKEN }}"
+      timeout-minutes: 10
+      with:
+        slack_channel: "${{env.SLACK_CHANNEL }}"
+        job_status: "${{ job.status }}"
+    - run: export PATH="$PATH:/go/bin"
+    - run: go get -u golang.org/x/lint/golint
+    - run: golint -set_exit_status $(go list ./... | grep -v /vendor/)
+
+  build_and_deploy:
+    runs-on: [ubuntu, runner-fleet]
+    container:
+      image: ghcr.io/wishabi/ci-build-environment:golang-1.16
+      credentials:
+        username: "${{ github.repository_owner }}"
+        password: "${{ secrets.GHCR_TOKEN }}"
+    needs: [lint]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Flipp global
+      uses: wishabi/github-actions@v0.4
+      env:
+        SLACK_BOT_TOKEN: "${{ secrets.SLACK_BOT_TOKEN }}"
+      timeout-minutes: 10
+      with:
+        slack_channel: "${{env.SLACK_CHANNEL }}"
+        job_status: "${{ job.status }}"
+    - name: Install aws cli
+      run: sudo apt-get install -y awscli
+    - run: git reset --hard
+    - run: git clean -f -d
+    - run: curl -sL https://git.io/goreleaser | bash

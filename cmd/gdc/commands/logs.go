@@ -24,10 +24,10 @@ import (
 var LogsCmd = &cobra.Command{
 	Use:    "logs",
 	Short:  "Show Docker logs for provided services",
-	Args: cobra.NoArgs,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		info := gdc.NewComposeInfo(ComposeFile, Services)
-		gdc.Logs(info)
+		gdc.Logs(info, args[0])
 		gdc.Cleanup()
 	},
 }
