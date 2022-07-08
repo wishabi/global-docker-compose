@@ -137,6 +137,13 @@ export LENSES_KEY="https://licenses.lenses.io/download/lensesdl?id=<<<YOUR KEY H
 
 That's it! You can access your local Lenses at [http://localhost:3030](http://localhost:3030), with both username and password set to `admin`. It typically takes about 30-45 seconds to start Lenses. If you're not seeing it past that, make sure you've given Docker enough memory (see #3 above).
 
+If you need to advertise a different host for the broker and schema registry, you can set the `KAFKA_ADV_HOST` environment variable before invoking `global_docker_compose`. Here's an example:
+
+```
+MY_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+KAFKA_ADV_HOST=$MY_IP global_docker_compose --services=kafka
+```
+
 ### Redis
 
 Redis comes with a built-in `redisinsight` task which can show you the contents of your Redis installation. You can access Insights at [http://localhost:8001](http://localhost:8001).

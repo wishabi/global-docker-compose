@@ -26,6 +26,7 @@ func RunCommand(cmd string, args... interface{}) {
 	}
 	fmt.Printf("-> %s\n", fullCommand)
 	command := shellCommand(sh.InteractiveSession(), fullCommand)
+	command.SetEnv("KAFKA_ADV_HOST", os.Getenv("KAFKA_ADV_HOST"))
 	command.SetStdin(os.Stdin)
 	err := command.Run()
 	if (err != nil) {

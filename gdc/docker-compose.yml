@@ -63,7 +63,7 @@ services:
   kafka:
     image: lensesio/box
     environment:
-      ADV_HOST: 127.0.0.1
+      ADV_HOST: ${KAFKA_ADV_HOST:-127.0.0.1}
       EULA: ${LENSES_KEY}
       DISABLE_JMX: 1
       ELASTICSEARCH_PORT: 0

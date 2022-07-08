@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+[0.6.1 - 0.6.6] - 2022-07-08
+- Fix GitHub Actions deploy process
+- Fixes for logs and down actions
+- Added KAFKA_ADV_HOST env variable support
+
 [0.6] - 2022-07-07
 - Fixed the `down` and `logs` commands to correctly take a service name.
 - Added the `config` command.
