@@ -23,4 +23,5 @@ brews:
     tap:
       owner: wishabi
       name: homebrew-flipp
+      token: "{{ .Env.HOMEBREW_GITHUB_TOKEN }}"
     description: Standardized and centralized Docker compose command
