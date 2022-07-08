@@ -136,7 +136,7 @@ func Down(compose ComposeInfo, service string) {
 func Logs(compose ComposeInfo, service string) {
 	var command string;
 	if service != "" {
-		command = fmt.Sprintf("logs %s", service)
+		command = service
 	} else {
 		command = serviceString(compose, "logs")
 	}
