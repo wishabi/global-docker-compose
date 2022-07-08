@@ -27,7 +27,11 @@ var LogsCmd = &cobra.Command{
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		info := gdc.NewComposeInfo(ComposeFile, Services)
-		gdc.Logs(info, args[0])
+		if len(args) > 0 {
+			gdc.Logs(info, args[0])
+		} else {
+			gdc.Logs(info, "")
+		}
 		gdc.Cleanup()
 	},
 }

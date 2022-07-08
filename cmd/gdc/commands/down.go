@@ -33,7 +33,11 @@ var DownCmd = &cobra.Command{
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		info := gdc.NewComposeInfo(ComposeFile, Services)
-		gdc.Down(info, args[0])
+		if len(args) > 0 {
+			gdc.Down(info, args[0])
+		} else {
+			gdc.Down(info, "")
+		}
 		gdc.Cleanup()
 	},
 }
