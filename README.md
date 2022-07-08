@@ -190,3 +190,4 @@ The steps to add a new service are:
 2. Add the functionality for your command in `gdc/docker.go`.
 3. Add a new command under `cmd/gdc/commands`. You can copy and paste an existing one or make changes. `global_docker_compose` uses [Cobra](https://github.com/spf13/cobra) for command-line flags, validations, help text and arguments, so please read that documentation for more info.
 4. Put up your PR!
+ 
