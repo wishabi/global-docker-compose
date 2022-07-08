@@ -121,7 +121,7 @@ func Down(compose ComposeInfo, service string) {
 		fmt.Printf("Requsted services ,%v", compose.RequestedServices[0])
 		var command string;
 		if service != "" {
-			command = fmt.Sprintf("down %s", service)
+			command = service
 		} else {
 			command = serviceString(compose, "down")
 		}
