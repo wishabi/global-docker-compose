@@ -16,3 +16,4 @@
 .vscode
 dist
 workspace.code-workspace
+./global_docker_compose
