@@ -84,6 +84,7 @@ Key|Service|Ports
 `redis`|Redis|<ul><li>6379</li><li>8001 (Insights)</li></ul>
 `kafka`|Kafka with Lenses Box|<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>3030 (Lenses)</li></ul>
 `mailcatcher`|Mailcatcher|<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
+`dynamodb`|DynamoDB|8000
 
 ### MySQL
 
@@ -111,7 +112,7 @@ mysqldump --single-transaction -h 127.0.0.1 -P 3306 --all-databases --no-tablesp
 # In a space-separated list, list it after `--databases` flag, e,g. fadmin dbs
 mysqldump --single-transaction -h 127.0.0.1 -P 3306 --databases fadmin_development fadmin_test --no-tablespaces > ./dump.sql
 ```
-3. Now import the dump through gdc. If you app is already on gdc, the `mysql` command will default to the version of MySQL that it currently uses. Otherwise, you can speficy the selected databases in Step 2. and MySQL version using `global_docker_compose mysql --service=<service> <dump_file>`
+3. Now import the dump through gdc. If your app is already on gdc, the `mysql` command will default to the version of MySQL that it currently uses. Otherwise, you can speficy the selected databases in Step 2. and MySQL version using `global_docker_compose mysql --service=<service> <dump_file>`
 ```sh
 ./gdc mysql ./dump.sql
 ```
@@ -197,4 +198,3 @@ The steps to add a new service are:
 2. Add the functionality for your command in `gdc/docker.go`.
 3. Add a new command under `cmd/gdc/commands`. You can copy and paste an existing one or make changes. `global_docker_compose` uses [Cobra](https://github.com/spf13/cobra) for command-line flags, validations, help text and arguments, so please read that documentation for more info.
 4. Put up your PR!
- 

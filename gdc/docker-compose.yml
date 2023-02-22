@@ -78,7 +78,18 @@ services:
     image: yappabe/mailcatcher
     ports:
       - "1080:1080"
-      - "1025:1025"   
+      - "1025:1025"
+
+# ---------- AWS ----------
+
+  dynamodb:
+    image: amazon/dynamodb-local
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/
+    hostname: dynamo-db-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodb-data:/home/dynamodblocal/data
 
 volumes:
   mysql56-data:
@@ -86,3 +97,4 @@ volumes:
   mysql8-data:
   redis-data:
   redisinsight:
+  dynamodb-data:
