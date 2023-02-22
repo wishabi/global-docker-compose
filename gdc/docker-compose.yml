@@ -83,6 +83,7 @@ services:
 # ---------- AWS ----------
 
   dynamodb:
+    user: root
     image: amazon/dynamodb-local
     command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/
     hostname: dynamo-db-local
