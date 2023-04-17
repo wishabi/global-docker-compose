@@ -84,6 +84,9 @@ func serviceString(compose ComposeInfo, command string) string {
 		if (service == "redis") {
 			results = append(results, "redisinsight")
 		}
+		if (service == "opensearch") {
+			results = append(results, "opensearch-dashboards")
+		}
 	}
 	return strings.Join(results, " ")
 }
