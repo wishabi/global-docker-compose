@@ -81,10 +81,13 @@ func serviceString(compose ComposeInfo, command string) string {
 			exitServiceNotFound(compose, command, service)
 		}
 		results = append(results, service)
-		if (service == "redis") {
+		if service == "redis" {
 			results = append(results, "redisinsight")
 		}
-		if (service == "opensearch") {
+		if service == "dynamodb" {
+			results = append(results, "dynamodb-admin")
+		}
+		if service == "opensearch" {
 			results = append(results, "opensearch-dashboards")
 		}
 	}
@@ -178,7 +181,7 @@ func RedisCLI(compose ComposeInfo) {
 	executeDockerCommand(compose, "redis", "redis-cli", "")
 }
 
-//Config print docker compose config 
+//Config print docker compose config
 func Config(compose ComposeInfo) {
 	RunCommand("%s config", mainCommand(compose))
 }

@@ -92,6 +92,15 @@ services:
     volumes:
       - dynamodb-data:/home/dynamodblocal/data
 
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8099:8001"
+    depends_on:
+      - dynamodb
+    environment:
+      DYNAMO_ENDPOINT: http://dynamodb:8000
+
 # ---------- OpenSearch ----------
   opensearch:
     image: opensearchproject/opensearch:2
@@ -116,7 +125,7 @@ services:
     ports:
       - 9200:9200 # REST API
       - 9600:9600 # Performance Analyzer
-  
+
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:2
     ports:

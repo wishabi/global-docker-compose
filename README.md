@@ -84,7 +84,7 @@ Key|Service|Ports
 `redis`|Redis|<ul><li>6379</li><li>8001 (Insights)</li></ul>
 `kafka`|Kafka with Lenses Box|<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>3030 (Lenses)</li></ul>
 `mailcatcher`|Mailcatcher|<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
-`dynamodb`|DynamoDB|8000
+`dynamodb`|DynamoDB|<ul><li>8000</li><li>8099 (Admin Dashboard)</li></ul>
 `opensearch`|OpenSearch|<ul><li>9200</li><li>5601 (Dashboard)</li></ul>
 
 ### MySQL
