@@ -73,6 +73,7 @@ services:
       - "8081:8081"
       - "3030:3030"
       - "9991:9991"
+      - "2181:2181"
 
   mailcatcher:
     image: yappabe/mailcatcher
@@ -86,7 +87,7 @@ services:
     user: root
     image: amazon/dynamodb-local
     command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/
-    hostname: dynamo-db-local
+    hostname: dynamodb-local
     ports:
       - "8000:8000"
     volumes:
@@ -99,7 +100,7 @@ services:
     depends_on:
       - dynamodb
     environment:
-      DYNAMO_ENDPOINT: http://dynamodb:8000
+      DYNAMO_ENDPOINT: http://dynamodb-local:8000
 
 # ---------- OpenSearch ----------
   opensearch:
