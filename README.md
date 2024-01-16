@@ -210,7 +210,7 @@ If you are on an M* macOS machine, you might run into trouble getting GDC to run
 We had to apply these fixes:
 
 ```sh
-docker pull --platform linux/x86_64 MySQL
+docker pull --platform linux/x86_64 mysql
 export DOCKER_DEFAULT_PLATFORM=linux/x86_64/v8 # you might want to put this in your rc or profile file
 ```
 
