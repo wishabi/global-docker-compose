@@ -199,3 +199,38 @@ The steps to add a new service are:
 2. Add the functionality for your command in `gdc/docker.go`.
 3. Add a new command under `cmd/gdc/commands`. You can copy and paste an existing one or make changes. `global_docker_compose` uses [Cobra](https://github.com/spf13/cobra) for command-line flags, validations, help text and arguments, so please read that documentation for more info.
 4. Put up your PR!
+
+
+## Troubleshooting
+
+If you are on an M* macOS machine, you might run into trouble getting GDC to run. 
+
+### Error: `no matching manifest for linux/arm64/v8 in the manifest list entries`
+
+We had to apply these fixes:
+
+```sh
+docker pull --platform linux/x86_64 MySQL
+export DOCKER_DEFAULT_PLATFORM=linux/x86_64/v8 # you might want to put this in your rc or profile file
+```
+
+Then re-run `gdc up`.
+
+#### References
+[StackOverflow Ref]([url](https://stackoverflow.com/questions/65456814/docker-apple-silicon-m1-preview-mysql-no-matching-manifest-for-linux-arm64-v8/67361161#67361161)https://stackoverflow.com/questions/65456814/docker-apple-silicon-m1-preview-mysql-no-matching-manifest-for-linux-arm64-v8/67361161#67361161)
+[Use Colima to run Docker containers]([url](https://smallsharpsoftwaretools.com/tutorials/use-colima-to-run-docker-containers-on-macos/)https://smallsharpsoftwaretools.com/tutorials/use-colima-to-run-docker-containers-on-macos/)
+
+### Error: `unknown shorthand flag: 'p' in -p`
+
+#### References
+
+To fix this, we had to run:
+
+```sh
+ln -sfn $(brew --prefix)/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+```
+
+We also made sure `colima`, `docker`, `docker-compose` and `XCode` were all up to date.
+
+[Fadmin Troubleshooting docs]([url](https://flippit.atlassian.net/wiki/spaces/CTLR/pages/10448437272/End-to-end+Fadmin+WES+local+setup#Troubleshooting)https://flippit.atlassian.net/wiki/spaces/CTLR/pages/10448437272/End-to-end+Fadmin+WES+local+setup#Troubleshooting) 
+
