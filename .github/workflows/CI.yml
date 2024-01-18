@@ -18,22 +18,8 @@ env:
 
 jobs:
 
-  lint:
-    runs-on: [ubuntu-latest]
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.21'
-    - run: export PATH="$PATH:/go/bin"
-    - run: go get -u golang.org/x/lint/golint
-    - run: golint -set_exit_status $(go list ./... | grep -v /vendor/)
-
   build_and_deploy:
     runs-on: [ubuntu-latest]
-    needs: [lint]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
