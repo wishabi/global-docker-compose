@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+[0.7.5] - 2024-01-18
+
+- Restore Lenses Box image for Kafka as it now works on arm64.
+
 [0.7.4] - 2023-05-23
 
 - Fix dynamodb hostname so it can work with kafka-etl. 
