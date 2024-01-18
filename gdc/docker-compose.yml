@@ -61,7 +61,7 @@ services:
 # ---------- KAFKA ----------
 
   kafka:
-    image: nhaidarflipp/kafka-lenses-dev:latest
+    image: lensesio/box
     environment:
       ADV_HOST: ${KAFKA_ADV_HOST:-127.0.0.1}
       EULA: ${LENSES_KEY}
