@@ -12,15 +12,15 @@ import (
 var dcFile []byte
 var outputFile = "./docker-compose-out.yml"
 
-//NewComposeInfo with the given additional file and requested services
+// NewComposeInfo with the given additional file and requested services
 func NewComposeInfo(additionalFile string, requestedServices string) ComposeInfo {
 	serviceArray := []string{}
 	if len(requestedServices) > 0 {
 		serviceArray = strings.Split(requestedServices, ",")
 	}
 	return ComposeInfo{
-		MainFile: dcFile,
-		AdditionalFile: additionalFile,
+		MainFile:          dcFile,
+		AdditionalFile:    additionalFile,
 		RequestedServices: serviceArray,
 	}
 }
@@ -30,7 +30,7 @@ func NewComposeInfo(additionalFile string, requestedServices string) ComposeInfo
 func writeDcFile() {
 	// check if file exists
 	_, err := os.Stat(outputFile)
-	if (err == nil) {
+	if err == nil {
 		return
 	}
 
@@ -42,11 +42,11 @@ func Cleanup() {
 	os.Remove(outputFile)
 }
 
-//Exit cleanly from the program.
-func Exit(message string, args... interface{}) {
+// Exit cleanly from the program.
+func Exit(message string, args ...interface{}) {
 	Cleanup()
-	if (len(message) > 0) {
-		if (len(args) > 0) {
+	if len(message) > 0 {
+		if len(args) > 0 {
 			fmt.Printf(message, args...)
 			fmt.Println()
 		} else {
@@ -62,21 +62,21 @@ func exitServiceNotFound(compose ComposeInfo, command string, service string) {
 Cannot execute command %s - %s is not a known service!
 Known services: %s
 `
-  Exit(str, command, service, services)
+	Exit(str, command, service, services)
 }
 
 func validateService(compose ComposeInfo, command string, service string) {
-	if (!compose.IsServiceConfigured((service))) {
+	if !compose.IsServiceConfigured((service)) {
 		exitServiceNotFound(compose, command, service)
 	}
 }
 
 func serviceString(compose ComposeInfo, command string) string {
-	if (len(compose.RequestedServices) == 0) {
+	if len(compose.RequestedServices) == 0 {
 		Exit("No services provided for command %s! Use the --services option.", command)
 	}
 	results := []string{}
-	for _, service := range(compose.RequestedServices) {
+	for _, service := range compose.RequestedServices {
 		if !compose.IsServiceConfigured(service) {
 			exitServiceNotFound(compose, command, service)
 		}
@@ -96,14 +96,14 @@ func serviceString(compose ComposeInfo, command string) string {
 
 func mainCommand(compose ComposeInfo) string {
 	cmd := fmt.Sprintf("docker compose -p global -f %s", outputFile)
-	if (len(compose.AdditionalFile) > 0) {
+	if len(compose.AdditionalFile) > 0 {
 		cmd = fmt.Sprintf("%s -f %s", cmd, compose.AdditionalFile)
 	}
 	return cmd
 }
 
 func executeDockerCommand(compose ComposeInfo, service string, command string, inputFile string) {
-	if (len(inputFile) > 0) {
+	if len(inputFile) > 0 {
 		RunCommands(
 			fmt.Sprintf("cat %s", inputFile),
 			fmt.Sprintf("%s exec -T %s %s", mainCommand(compose), service, command),
@@ -114,18 +114,18 @@ func executeDockerCommand(compose ComposeInfo, service string, command string, i
 	}
 }
 
-//Up bring up the Docker containers
+// Up bring up the Docker containers
 func Up(compose ComposeInfo) {
 	str := serviceString(compose, "up")
-	RunCommands("aws ecr get-login-password","docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com")
+	RunCommands("aws ecr get-login-password", "docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com")
 	RunCommand("%s up -d %s", mainCommand(compose), str)
 }
 
-//Down bring down the Docker containers
+// Down bring down the Docker containers
 func Down(compose ComposeInfo, service string) {
-	if (len(compose.RequestedServices) > 0) {
+	if len(compose.RequestedServices) > 0 {
 		fmt.Printf("Requsted services ,%v", compose.RequestedServices[0])
-		var command string;
+		var command string
 		if service != "" {
 			command = service
 		} else {
@@ -138,9 +138,9 @@ func Down(compose ComposeInfo, service string) {
 	}
 }
 
-//Logs show the logs for the selected containers
+// Logs show the logs for the selected containers
 func Logs(compose ComposeInfo, service string) {
-	var command string;
+	var command string
 	if service != "" {
 		command = service
 	} else {
@@ -149,12 +149,12 @@ func Logs(compose ComposeInfo, service string) {
 	RunCommand("%s logs -f %s", mainCommand(compose), command)
 }
 
-//Ps show the currently running containers
+// Ps show the currently running containers
 func Ps(compose ComposeInfo) {
 	RunCommand("%s ps", mainCommand(compose))
 }
 
-//Exec execute a command against a service
+// Exec execute a command against a service
 func Exec(compose ComposeInfo, service string, command []string) {
 	validateService(compose, "exec", service)
 	executeDockerCommand(compose, service, strings.Join(command, " "), "")
@@ -164,7 +164,7 @@ func Exec(compose ComposeInfo, service string, command []string) {
 func Mysql(compose ComposeInfo, input string) {
 	// check which version is running
 	versions := []string{"mysql56", "mysql57", "mysql8"}
-	for _, version := range(versions) {
+	for _, version := range versions {
 		if compose.IsServiceRequested(version) {
 			executeDockerCommand(compose, version, "mysql", input)
 			return
@@ -176,13 +176,12 @@ func Mysql(compose ComposeInfo, input string) {
 
 }
 
-//RedisCLI starts up the Redis command line
+// RedisCLI starts up the Redis command line
 func RedisCLI(compose ComposeInfo) {
 	executeDockerCommand(compose, "redis", "redis-cli", "")
 }
 
-//Config print docker compose config
+// Config print docker compose config
 func Config(compose ComposeInfo) {
 	RunCommand("%s config", mainCommand(compose))
 }
-

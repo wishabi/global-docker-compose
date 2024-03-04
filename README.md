@@ -81,7 +81,7 @@ Key|Service|Ports
 `mysql56`|MySQL 5.6|3307
 `mysql57`|MySQL 5.7|3306
 `mysql8`|MySQL 8.0|3308
-`redis`|Redis|<ul><li>6379</li><li>8001 (Insights)</li></ul>
+`redis`|Redis|<ul><li>6379</li><li>5540 (Insights V2)</li></ul>
 `kafka`|Kafka with Lenses Box|<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>3030 (Lenses)</li></ul>
 `mailcatcher`|Mailcatcher|<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
 `dynamodb`|DynamoDB|<ul><li>8000</li><li>8099 (Admin Dashboard)</li></ul>
@@ -148,23 +148,9 @@ KAFKA_ADV_HOST=$MY_IP global_docker_compose --services=kafka
 
 ### Redis
 
-Redis comes with a built-in `redisinsight` task which can show you the contents of your Redis installation. You can access Insights at [http://localhost:8001](http://localhost:8001).
+Redis comes with a built-in `redisinsight` task which can show you the contents of your Redis installation. You can access Insights v2 at [http://localhost:5540](http://localhost:5540).
 
-To allow it to access your local Redis, you *can't* use `127.0.0.1`. Instead [you need to use your host IP address](https://collabnix.com/running-redisinsight-using-docker-compose/) - use `ifconfig en0` to find it:
-
-<pre>
-➜  ~/RubymineProjects/cp-legacy git:(main) ✗ ifconfig en0
-en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
-	options=400<CHANNEL_IO>
-	ether 14:7d:da:49:ca:df 
-	inet6 fe80::10f0:fee7:2a6f:be0e%en0 prefixlen 64 secured scopeid 0xa 
-	inet <b>192.168.1.9</b> netmask 0xffffff00 broadcast 192.168.1.255
-	nd6 options=201<PERFORMNUD,DAD>
-	media: autoselect
-	status: active
-</pre>
-
-In this case you'd enter `192.168.1.9` as your hostname in Redis Insight.
+To allow it to access your local Redis, you *can't* use `127.0.0.1`. Instead use docker networking and set it by the container name in the default case this will be `redis`.
 
 ### Mailcatcher
 

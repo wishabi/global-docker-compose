@@ -52,11 +52,11 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
 
   redisinsight:
-    image: redislabs/redisinsight:latest
+    image: redislabs/redisinsight:v2
     volumes:
       - redisinsight:/db
     ports:
-      - "8001:8001"
+      - "5540:5540"
 
 # ---------- KAFKA ----------
 
