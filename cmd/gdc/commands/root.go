@@ -10,14 +10,16 @@ import (
 )
 
 var cfgFile string
+
 // Services list of services (space delimited)
 var Services string
+
 // ComposeFile optional additional docker-compose.yml file
 var ComposeFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: "0.7.5",
+	Version: "0.8.0",
 	Use:     "global_docker_compose (command) --services service1 service2 --compose_file ../docker-compose.yml",
 	Short:   "Generate JSON files to use with the Flipp platform deploy scripts",
 	Long: `
@@ -29,7 +31,7 @@ var rootCmd = &cobra.Command{
 
          For more information, please see https://github.com/wishabi/global-docker-compose .
 	`,
-	Args:    cobra.ExactArgs(1),
+	Args: cobra.ExactArgs(1),
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
