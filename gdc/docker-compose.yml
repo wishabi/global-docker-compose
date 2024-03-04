@@ -142,6 +142,5 @@ volumes:
   mysql8-data:
   redis-data:
   redisinsight:
-  redisinsightv2:
   dynamodb-data:
   opensearch-data:
