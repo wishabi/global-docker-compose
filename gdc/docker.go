@@ -114,10 +114,24 @@ func executeDockerCommand(compose ComposeInfo, service string, command string, i
 	}
 }
 
+func ecrLogin() {
+	RunCommands("aws ecr get-login-password", "docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com")
+}
+
+func Build(service string, compose ComposeInfo, noCache bool) {
+	cmd := fmt.Sprintf("%s build", mainCommand(compose))
+	if noCache {
+		cmd = fmt.Sprintf("%s --no-cache", cmd)
+	}
+
+	ecrLogin()
+	RunCommand("%s %s", cmd, service)
+}
+
 // Up bring up the Docker containers
 func Up(compose ComposeInfo) {
 	str := serviceString(compose, "up")
-	RunCommands("aws ecr get-login-password", "docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com")
+	ecrLogin()
 	RunCommand("%s up -d %s", mainCommand(compose), str)
 }
 
