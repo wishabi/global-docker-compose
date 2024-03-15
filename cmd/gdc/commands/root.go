@@ -19,7 +19,7 @@ var ComposeFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: "0.8.0",
+	Version: "0.9.0",
 	Use:     "global_docker_compose (command) --services service1 service2 --compose_file ../docker-compose.yml",
 	Short:   "Generate JSON files to use with the Flipp platform deploy scripts",
 	Long: `
