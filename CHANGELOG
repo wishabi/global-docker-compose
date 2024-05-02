@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
-[0.7.6] - 2024-03-04
+[0.10.0] - 2024-05-02
+
+- Fix for new MySQL 8 images.
+
+[0.9.0] - 2024-03-15
+
+- Add `gdc build` command.
+
+[0.8.0] - 2024-03-04
 
 - Bump version of Redis Insight to V2 and change the exported port to 5540.
 
@@ -17,9 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.7.4] - 2023-05-23
 
-- Fix dynamodb hostname so it can work with kafka-etl. 
+- Fix dynamodb hostname so it can work with kafka-etl.
 
-[0.7.3] - 2023-05-18 
+[0.7.3] - 2023-05-18
 
 - Added dyanmodb-admin when dynamodb is included.
 
