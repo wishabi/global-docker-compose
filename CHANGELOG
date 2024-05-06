@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
-[0.10.0] - 2024-05-02
+[0.10.1] - 2024-05-06
 
 - Fix for new MySQL 8 images.
 
