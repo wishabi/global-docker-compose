@@ -37,7 +37,7 @@ services:
         - mysql8-data:/var/lib/mysql
     environment:
         MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-    command: mysqld --default-authentication-plugin=mysql_native_password
+    command: mysqld --authentication_policy=* --mysql-native-password=ON
 
 # ---------- REDIS ----------
 

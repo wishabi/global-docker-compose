@@ -1,6 +1,6 @@
 # global_docker_compose
 
-`global_docker_compose` is a centralized way to manage your external dependencies across multiple projects. You start up your Docker services once, and all relevant ports are exposed so that you can use them in your apps. You don't need special `docker-compose.yml` files in each app, nor do you have multiple versions of MySQL or Kafka running around. 
+`global_docker_compose` is a centralized way to manage your external dependencies across multiple projects. You start up your Docker services once, and all relevant ports are exposed so that you can use them in your apps. You don't need special `docker-compose.yml` files in each app, nor do you have multiple versions of MySQL or Kafka running around.
 
 The idea behind `global_docker_compose` is to have everything *but* your app running in a Docker container. `global_docker_compose` is the central place to manage making those containers "good", including volumes, correct port exposure, hostnames, etc.
 
@@ -33,6 +33,8 @@ Or you can build it from source by running the following from the root directory
 * `global_docker_compose exec <service> <command>` Execute a command on an existing service.
 * `global_docker_compose mysql --service=<service> {input_file}` Start a MySQL client against whatever MySQL service is provided (e.g. `mysql56`). If an input file is provided, execute the statements in the input file. Additional services can be specified in the `<service>` parameter; they will be ignored.
 * `global_docker_compose redis_cli` Start the Redis CLI (assuming `redis` is running)
+* `global_docker_compose build {service}` Build the target service image
+* `global_docker_compose build --no-cache {service}` Build the target service image without caching build steps
 
 The recommended usage of this command is via a shell script that lives in your project which automatically passes through the services that the app cares about. For example, in an executable file called `gdc`:
 
@@ -53,7 +55,7 @@ All services are exposed with the host IP of `127.0.0.1`. If you use `localhost`
 
 ## Additional Compose Files
 
-`global_docker_compose` allows to supply an additional docker-compose file to augment the built-in ones with the `--compose_file` option. This file will be merged with the built-in ones using [docker-compose's merging rules](https://docs.docker.com/compose/extends/#adding-and-overriding-configuration). 
+`global_docker_compose` allows to supply an additional docker-compose file to augment the built-in ones with the `--compose_file` option. This file will be merged with the built-in ones using [docker-compose's merging rules](https://docs.docker.com/compose/extends/#adding-and-overriding-configuration).
 
 Note that if you define new services with this file, you must pass in the service name with the `--services` option along with the other ones.
 
@@ -191,7 +193,7 @@ The steps to add a new service are:
 
 ## Troubleshooting
 
-If you are on an M* macOS machine, you might run into trouble getting GDC to run. 
+If you are on an M* macOS machine, you might run into trouble getting GDC to run.
 
 ### Error: `no matching manifest for linux/arm64/v8 in the manifest list entries`
 
@@ -220,5 +222,5 @@ ln -sfn $(brew --prefix)/opt/docker-compose/bin/docker-compose ~/.docker/cli-plu
 
 We also made sure `colima`, `docker`, `docker-compose` and `XCode` were all up to date.
 
-[Fadmin Troubleshooting docs]([url](https://flippit.atlassian.net/wiki/spaces/CTLR/pages/10448437272/End-to-end+Fadmin+WES+local+setup#Troubleshooting)https://flippit.atlassian.net/wiki/spaces/CTLR/pages/10448437272/End-to-end+Fadmin+WES+local+setup#Troubleshooting) 
+[Fadmin Troubleshooting docs]([url](https://flippit.atlassian.net/wiki/spaces/CTLR/pages/10448437272/End-to-end+Fadmin+WES+local+setup#Troubleshooting)https://flippit.atlassian.net/wiki/spaces/CTLR/pages/10448437272/End-to-end+Fadmin+WES+local+setup#Troubleshooting)
 
