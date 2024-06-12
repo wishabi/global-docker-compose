@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump version of Redis Insight to V2 and change the exported port to 5540.
 
+[0.7.6] - 2024-03-04
+
+- Bump version to 0.7.6
+- Move to insights v2 (#10)
+
 [0.7.5] - 2024-01-18
 
 - Restore Lenses Box image for Kafka as it now works on arm64.
