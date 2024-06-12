@@ -19,10 +19,10 @@ var ComposeFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-  Version: "0.10.0",
-  Use:     "global_docker_compose (command) --services service1 service2 --compose_file ../docker-compose.yml",
-  Short:   "Generate JSON files to use with the Flipp platform deploy scripts",
-  Long: `
+	Version: "0.11.0",
+	Use:     "global_docker_compose (command) --services service1 service2 --compose_file ../docker-compose.yml",
+	Short:   "Generate JSON files to use with the Flipp platform deploy scripts",
+	Long: `
          global_docker_compose can be used to centralize and standardize Docker dependencies used within Flipp.
          The idea is to have one tool that can spin up whatever services are needed and keep that tool updated
          with fixes and improvements, rather than having a separate docker-compose.yml file in every project.

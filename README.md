@@ -23,8 +23,10 @@ Or you can build it from source by running the following from the root directory
 `global_docker_compose` has multiple sub-commands, most of which should be familiar:
 
 * `global_docker_compose up --service=<service1>,<service2>`: Bring up a list of services as defined by the table below.
-* `global_docker_compose down {service}`: Bring down the specificed service, or all services if not provided.
+* `global_docker_compose down {service}`: Bring down the specified service, or all services if not provided.
 * `global_docker_compose down`: Bring down all services.
+* `global_docker_compose stop --service=<service1>,<service2>`: Stop the specified services, or all services if not provided.
+* `global_docker_compose stop`: Stop all services.
 * `global_docker_compose ps`: Show all running services that were configured using the tool.
 * `global_docker_compose config`: Print out the docker compose config file being used.
 * `global_docker_compose logs {service}`: Print out logs for the specified service, or all services if not provided.

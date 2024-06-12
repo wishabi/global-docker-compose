@@ -138,7 +138,7 @@ func Up(compose ComposeInfo) {
 // Down bring down the Docker containers
 func Down(compose ComposeInfo, service string) {
 	if len(compose.RequestedServices) > 0 {
-		fmt.Printf("Requsted services ,%v", compose.RequestedServices[0])
+		fmt.Printf("Requested services ,%v", compose.RequestedServices[0])
 		var command string
 		if service != "" {
 			command = service
@@ -149,6 +149,16 @@ func Down(compose ComposeInfo, service string) {
 		RunCommand("%s rm -f %s", mainCommand(compose), command)
 	} else {
 		RunCommand("%s down", mainCommand(compose))
+	}
+}
+
+// Stop the Docker containers
+func Stop(compose ComposeInfo) {
+	if len(compose.RequestedServices) > 0 {
+		fmt.Printf("Requested services ,%v", compose.RequestedServices[0])
+		RunCommand("%s stop %s", mainCommand(compose), serviceString(compose, "stop"))
+	} else {
+		RunCommand("%s stop", mainCommand(compose))
 	}
 }
 
