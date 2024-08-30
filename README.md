@@ -93,13 +93,27 @@ Key|Service|Ports
 
 ### MySQL
 
+MySQL should be running locally. You should be using `brew install mysql` or a specific version like `brew install mysql@8.4` to install it locally. Then, you can run global_docker_compose to run the server for your repo.
+
 global_docker_compose supports MySQL 5.6, 5.7 and 5.8. To avoid port conflicts, the exported ports are as follows:
 
 * 5.6: 3307
 * 5.7: 3306
 * 5.8: 3308
 
-The reason 5.7 was given the "default" of 3306 is that it is currently the most common / default version to use.
+5.7 was given the "default" of 3306 because it is currently the most common version to use.
+
+#### Upgrading MySQL
+
+To upgrade global_docker_compose, you must update this repo and release a new gem.
+
+To upgrade your version of MySQL running locally, run `brew upgrade mysql`. 
+
+If you need a specific version of MySQL:
+
+1. Run `brew uninstall mysql`.
+2. Run `brew install mysql@8.4` (or whichever version you need).
+3. Update your shell profile as per the instructions in the terminal.
 
 #### Exporting and Importing databases to GDC
 To get a dump ready from your local databases to GDC, you must:
