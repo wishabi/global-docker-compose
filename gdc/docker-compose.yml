@@ -60,7 +60,7 @@ services:
 # ---------- KAFKA ----------
 
   kafka:
-    image: lensesio/box
+    image: lensesio/fast-data-dev
     environment:
       ADV_HOST: ${KAFKA_ADV_HOST:-127.0.0.1}
       EULA: ${LENSES_KEY}
