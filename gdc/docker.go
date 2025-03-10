@@ -81,6 +81,9 @@ func serviceString(compose ComposeInfo, command string) string {
 			exitServiceNotFound(compose, command, service)
 		}
 		results = append(results, service)
+		if service == "kafka" {
+			results = append(results, "schema-registry", "control-center")
+		}
 		if service == "redis" {
 			results = append(results, "redisinsight")
 		}

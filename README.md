@@ -80,16 +80,16 @@ global_docker_compose up --services=redis,postgres --compose_file=./docker-compo
 
 ## Supported Services
 
-Key|Service|Ports
----|-------|-----
-`mysql56`|MySQL 5.6|3307
-`mysql57`|MySQL 5.7|3306
-`mysql8`|MySQL 8.0|3308
-`redis`|Redis|<ul><li>6379</li><li>5540 (Insights V2)</li></ul>
-`kafka`|Kafka with Lenses Box|<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>3030 (Lenses)</li></ul>
-`mailcatcher`|Mailcatcher|<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
-`dynamodb`|DynamoDB|<ul><li>8000</li><li>8099 (Admin Dashboard)</li></ul>
-`opensearch`|OpenSearch|<ul><li>9200</li><li>5601 (Dashboard)</li></ul>
+Key| Service                       |Ports
+---|-------------------------------|-----
+`mysql56`| MySQL 5.6                     |3307
+`mysql57`| MySQL 5.7                     |3306
+`mysql8`| MySQL 8.0                     |3308
+`redis`| Redis                         |<ul><li>6379</li><li>5540 (Insights V2)</li></ul>
+`kafka`| Kafka with Confluent Platform |<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>9021 (Control Center)</li></ul>
+`mailcatcher`| Mailcatcher                   |<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
+`dynamodb`| DynamoDB                      |<ul><li>8000</li><li>8099 (Admin Dashboard)</li></ul>
+`opensearch`| OpenSearch                    |<ul><li>9200</li><li>5601 (Dashboard)</li></ul>
 
 ### MySQL
 
@@ -124,30 +124,6 @@ mysqldump --single-transaction -h 127.0.0.1 -P 3306 --databases fadmin_developme
 4. Rinse and repeat! Don't forget to remove the dump-file to reduce clutter on your local machine.
 ```
 rm ./dump.sql
-```
-
-### Kafka with Lenses
-
-The recommended way to have your app talk to Kafka is to use Lenses Box, which is denoted by the `kafka` service. This includes the Kafka brokers, Zookeeper, schema registry, and Kafka Connect.
-
-In order to use Lenses, you need to do the following:
-
-1. Go [here](https://lenses.io/box/) and enter your e-mail address. You will get a free license key which is good for 6 months.
-2. Edit your `~/.bashrc` or `~/.zshrc` and add the following lines:
-
-```
-export LENSES_KEY="https://licenses.lenses.io/download/lensesdl?id=<<<YOUR KEY HERE>>>"
-```
-
-3. Make sure that your Docker process can use at least 5GB of memory. On Mac you can do this via Docker for Mac -> Resources.
-
-That's it! You can access your local Lenses at [http://localhost:3030](http://localhost:3030), with both username and password set to `admin`. It typically takes about 30-45 seconds to start Lenses. If you're not seeing it past that, make sure you've given Docker enough memory (see #3 above).
-
-If you need to advertise a different host for the broker and schema registry, you can set the `KAFKA_ADV_HOST` environment variable before invoking `global_docker_compose`. Here's an example:
-
-```
-MY_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
-KAFKA_ADV_HOST=$MY_IP global_docker_compose --services=kafka
 ```
 
 ### Redis
