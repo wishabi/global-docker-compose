@@ -82,9 +82,8 @@ global_docker_compose up --services=redis,postgres --compose_file=./docker-compo
 
 Key| Service                       |Ports
 ---|-------------------------------|-----
-`mysql56`| MySQL 5.6                     |3307
-`mysql57`| MySQL 5.7                     |3306
-`mysql8`| MySQL 8.0                     |3308
+`mysql57`| MySQL 5.7                     |3307
+`mysql8`| MySQL 8.0                     |3306
 `redis`| Redis                         |<ul><li>6379</li><li>5540 (Insights V2)</li></ul>
 `kafka`| Kafka with Confluent Platform |<ul><li>9092 (Kafka broker)</li><li>8081 (Schema Registry)</li><li>9021 (Control Center)</li></ul>
 `mailcatcher`| Mailcatcher                   |<ul><li>1025 (SMTP server)</li><li>1080 (UI)</li></ul>
@@ -93,13 +92,10 @@ Key| Service                       |Ports
 
 ### MySQL
 
-global_docker_compose supports MySQL 5.6, 5.7 and 5.8. To avoid port conflicts, the exported ports are as follows:
+global_docker_compose supports MySQL 5.7 and 8.0. To avoid port conflicts, the exported ports are as follows:
 
-* 5.6: 3307
-* 5.7: 3306
-* 5.8: 3308
-
-The reason 5.7 was given the "default" of 3306 is that it is currently the most common / default version to use.
+* 5.7: 3307
+* 5.8: 3306
 
 #### Exporting and Importing databases to GDC
 To get a dump ready from your local databases to GDC, you must:
@@ -113,11 +109,11 @@ To get a dump ready from your local databases to GDC, you must:
 ```
 2. Then actually dump the databases or selected databases with the `--databases` option
 ```sh
-mysqldump --single-transaction -h 127.0.0.1 -P 3306 --all-databases --no-tablespaces > ./dump.sql
+mysqldump --single-transaction -h 127.0.0.1 -P 3306 --all-databases --no-tablespaces -u root > ./dump.sql
 # In a space-separated list, list it after `--databases` flag, e,g. fadmin dbs
-mysqldump --single-transaction -h 127.0.0.1 -P 3306 --databases fadmin_development fadmin_test --no-tablespaces > ./dump.sql
+mysqldump --single-transaction -h 127.0.0.1 -P 3306 --databases my_service_development my_service_test --no-tablespaces -u root > ./dump.sql
 ```
-3. Now import the dump through gdc. If your app is already on gdc, the `mysql` command will default to the version of MySQL that it currently uses. Otherwise, you can speficy the selected databases in Step 2. and MySQL version using `global_docker_compose mysql --service=<service> <dump_file>`
+3. Now import the dump through gdc. If your app is already on gdc, the `mysql` command will default to the version of MySQL that it currently uses. Otherwise, you can specify the selected databases in Step 2. and MySQL version using `global_docker_compose mysql --service=<service> <dump_file>`
 ```sh
 ./gdc mysql ./dump.sql
 ```
