@@ -107,10 +107,14 @@ func mainCommand(compose ComposeInfo) string {
 
 func executeDockerCommand(compose ComposeInfo, service string, command string, inputFile string) {
 	if len(inputFile) > 0 {
-		RunCommands(
+		cmds := []string{
 			fmt.Sprintf("cat %s", inputFile),
 			fmt.Sprintf("%s exec -T %s %s", mainCommand(compose), service, command),
-		)
+		}
+		err := RunCommands(cmds...)
+		if err != nil {
+			Exit("Error running command! %v", cmds)
+		}
 	} else {
 		RunCommand("%s exec %s %s", mainCommand(compose), service, command)
 
@@ -118,22 +122,63 @@ func executeDockerCommand(compose ComposeInfo, service string, command string, i
 }
 
 func ecrLogin() {
-	RunCommands("aws ecr get-login-password", "docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com")
+	cmds := []string{
+		"aws ecr get-login-password",
+		"docker login --password-stdin -u AWS 421990735784.dkr.ecr.us-east-1.amazonaws.com",
+	}
+	err := RunCommands(cmds...)
+	if err != nil {
+		Exit("Error logging into ECR! %v", err)
+	}
 }
 
-func Build(service string, compose ComposeInfo, noCache bool) {
+func ghcrLogin() {
+	// Try gh CLI first - get username
+	username, err := RunCommandsOutput("gh api user -q .login")
+	if err == nil && username != "" {
+		fmt.Println("Logging into GitHub Container Registry using GitHub CLI credentials...")
+		err = RunCommands("gh auth token", fmt.Sprintf("docker login ghcr.io -u %s --password-stdin", username))
+		if err == nil {
+			return
+		}
+	}
+
+	// Try environment variables
+	githubToken := os.Getenv("GITHUB_TOKEN")
+	githubUsername := os.Getenv("GITHUB_USERNAME")
+	if githubToken != "" && githubUsername != "" {
+		fmt.Println("Logging into GitHub Container Registry using environment variables...")
+		err = RunCommands(
+			fmt.Sprintf("echo %s", githubToken),
+			fmt.Sprintf("docker login ghcr.io -u %s --password-stdin", githubUsername),
+		)
+		if err == nil {
+			return
+		}
+	}
+
+	Exit("Error logging into GitHub Container Registry! Please make sure you have the gh CLI installed and authenticated, or set the GITHUB_TOKEN and GITHUB_USERNAME environment variables.")
+}
+
+func Build(service string, compose ComposeInfo, noCache bool, loginToGhcr bool) {
 	cmd := fmt.Sprintf("%s build", mainCommand(compose))
 	if noCache {
 		cmd = fmt.Sprintf("%s --no-cache", cmd)
 	}
 
+	if loginToGhcr {
+		ghcrLogin()
+	}
 	ecrLogin()
 	RunCommand("%s %s", cmd, service)
 }
 
 // Up bring up the Docker containers
-func Up(compose ComposeInfo) {
+func Up(compose ComposeInfo, loginToGhcr bool) {
 	str := serviceString(compose, "up")
+	if loginToGhcr {
+		ghcrLogin()
+	}
 	ecrLogin()
 	RunCommand("%s up -d %s", mainCommand(compose), str)
 }

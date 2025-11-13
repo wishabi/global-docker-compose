@@ -38,7 +38,7 @@ var BuildCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		info := gdc.NewComposeInfo(ComposeFile, Services)
-		gdc.Build(args[0], info, NoCache)
+		gdc.Build(args[0], info, NoCache, LoginToGhcr)
 	},
 }
 

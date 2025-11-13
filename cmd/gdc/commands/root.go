@@ -17,6 +17,9 @@ var Services string
 // ComposeFile optional additional docker-compose.yml file
 var ComposeFile string
 
+// LoginToGhcr whether to login to GitHub Container Registry
+var LoginToGhcr bool
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Version: "0.13.0",
@@ -47,6 +50,7 @@ func init() {
 	rootCmd.MarkFlagRequired("input")
 
 	rootCmd.PersistentFlags().StringVarP(&ComposeFile, "compose_file", "c", "", "Additional docker-compose file to use")
+	rootCmd.PersistentFlags().BoolVarP(&LoginToGhcr, "login-to-ghcr", "g", false, "Login to GitHub Container Registry before building or starting containers")
 }
 
 // initConfig reads in config file and ENV variables if set.

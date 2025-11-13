@@ -1,6 +1,6 @@
 package gdc
 
-import(
+import (
 	"fmt"
 	"os"
 	"strings"
@@ -9,19 +9,19 @@ import(
 )
 
 func shellCommand(session *sh.Session, cmd string) *sh.Session {
-  tokens := strings.Split(cmd, " ")
+	tokens := strings.Split(cmd, " ")
 	tokensInt := []interface{}{} // doesn't seem to be any direct way to cast []string to []interface{}
-	for _, t := range(tokens[1:]) {
+	for _, t := range tokens[1:] {
 		tokensInt = append(tokensInt, t)
 	}
-  return session.Command(tokens[0], tokensInt...)
+	return session.Command(tokens[0], tokensInt...)
 }
 
-//RunCommand with a command string and arguments for interpolation using Sprintf
-func RunCommand(cmd string, args... interface{}) {
+// RunCommand with a command string and arguments for interpolation using Sprintf
+func RunCommand(cmd string, args ...interface{}) {
 	writeDcFile()
 	fullCommand := cmd
-	if (len(args) > 0) {
+	if len(args) > 0 {
 		fullCommand = fmt.Sprintf(cmd, args...)
 	}
 	fmt.Printf("-> %s\n", fullCommand)
@@ -29,33 +29,44 @@ func RunCommand(cmd string, args... interface{}) {
 	command.SetEnv("KAFKA_ADV_HOST", os.Getenv("KAFKA_ADV_HOST"))
 	command.SetStdin(os.Stdin)
 	err := command.Run()
-	if (err != nil) {
+	if err != nil {
 		Exit("Error running command! %s", fullCommand)
 	}
 }
 
 // RunCommands run a list of commands to be piped into each other
-func RunCommands(commands... string) {
+func RunCommands(commands ...string) error {
 	writeDcFile()
-	for i, cmd := range(commands) {
-     if (i == 0) {
-			 fmt.Printf("-> %s", cmd)
-		 } else {
-			 fmt.Printf(" | %s", cmd)
-		 }
+	for i, cmd := range commands {
+		if i == 0 {
+			fmt.Printf("-> %s", cmd)
+		} else {
+			fmt.Printf(" | %s", cmd)
+		}
 	}
 	fmt.Println()
-	
+
 	session := sh.InteractiveSession()
 	session.PipeStdErrors = true
 	session.PipeFail = true
 	session.SetStdin(os.Stdin)
-	for _, cmd := range(commands) {
+	for _, cmd := range commands {
 		session = shellCommand(session, cmd)
 	}
-	err := session.Run()
-	if (err != nil) {
-		Exit("Error running command! %v", commands)
-	}
+
+	return session.Run()
 }
 
+// RunCommandsOutput run a list of commands piped together and return the output
+func RunCommandsOutput(commands ...string) (string, error) {
+	session := sh.NewSession()
+	session.ShowCMD = false
+	session.PipeStdErrors = true
+	session.PipeFail = true
+	for _, cmd := range commands {
+		session = shellCommand(session, cmd)
+	}
+	
+	output, err := session.Output()
+	return strings.TrimSpace(string(output)), err
+}
